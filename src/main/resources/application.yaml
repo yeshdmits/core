@@ -1,0 +1,30 @@
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URL}
+  kafka:
+    consumer:
+      bootstrap-servers: ${KAFKA_URL}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: yeshenko.dto
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH_URL}
+mongock:
+  migration-scan-package: yeshenko.changelog
+minio:
+  bucket:
+    name: device-info
+  access:
+    key: ${MINIO_KEY:minioadmin}
+    secret: ${MINIO_SECRET:minioadmin}
+  url: ${MINIO_URL}
+
