@@ -1,36 +1,68 @@
 version: "3.3"
 services:
   mongodb:
-    image: "mongo:5.0.7"
+    image: mongo:5.0.7
     ports:
       - "27017:27017"
   zookeeper:
-    image: "bitnami/zookeeper:latest"
-    ports:
-      - "2181:2181"
+    image: confluentinc/cp-zookeeper:latest
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
   kafka:
-    image: "bitnami/kafka:2.8.1"
-    ports:
-      - "9092:9092"
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
+    image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   minio:
     image: minio/minio
     container_name: minio
     command: server /data --console-address ":9001"
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASS}
     volumes:
       - /data
     ports:
       - "9000:9000"
       - "9001:9001"
+  postgres:
+    image: postgres:13.2
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRESQL_DB}
+      POSTGRES_USER: ${POSTGRESQL_USER}
+      POSTGRES_PASSWORD: ${POSTGRESQL_PASS}
+    volumes:
+      - /var/lib/postgresql/data
+  keycloak:
+    depends_on:
+      - postgres
+    container_name: keycloak
+    environment:
+      KEYCLOAK_USER: ${AUTH_ADMIN_NAME}
+      KEYCLOAK_PASSWORD: ${AUTH_ADMIN_PASS}
+      KEYCLOAK_IMPORT: /tmp/yeshenko-realm.json
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: ${POSTGRESQL_DB}
+      DB_USER: ${POSTGRESQL_USER}
+      DB_PASSWORD: ${POSTGRESQL_PASS}
+      HTTPS_METHOD: redirect
+    ports:
+      - "8081:8080"
+    image: jboss/keycloak:${KEYCLOAK_VERSION}
+    restart: unless-stopped
+    volumes:
+      - ./src/main/resources/yeshenko-realm.json:/tmp/yeshenko-realm.json
+

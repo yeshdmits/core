@@ -14,7 +14,7 @@ public class JwtClientRoleConverter implements Converter<Jwt, Collection<Granted
     @Override
     public Collection<GrantedAuthority> convert(Jwt jwt) {
         final Map<String, Object> resourceAccess = (Map<String, Object>) jwt.getClaims().get("resource_access");
-        Map<String, Object> edgeServiceRoles = (Map<String, Object>) resourceAccess.get("edge-service");
+        Map<String, Object> edgeServiceRoles = (Map<String, Object>) resourceAccess.get("core-service");
         return ((List<String>)edgeServiceRoles.get("roles")).stream()
                 .map(roleName -> "ROLE_" + roleName)
                 .map(SimpleGrantedAuthority::new)

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.6</version>
+		<version>2.7.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>yeshenko</groupId>
@@ -15,10 +15,13 @@
 	<description>Core Service</description>
 	<properties>
 		<java.version>11</java.version>
-		<mapstruct.version>1.4.2.Final</mapstruct.version>
+		<mapstruct.version>1.5.3.Final</mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-		<mongock.version>5.1.0</mongock.version>
+		<mongock.version>5.2.1</mongock.version>
 		<kafka.version>2.8.1</kafka.version>
+		<javadocs.version>1.6.13</javadocs.version>
+		<minio.version>8.4.1</minio.version>
+		<jackson.version>2.14.0</jackson.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -51,13 +54,11 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
-			<version>${kafka.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.8</version>
+			<version>${javadocs.version}</version>
 		</dependency>
 
 		<dependency>
@@ -80,7 +81,7 @@
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
-			<version>8.4.1</version>
+			<version>${minio.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
@@ -90,7 +91,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
-			<version>2.13.3</version>
+			<version>${jackson.version}</version>
 		</dependency>
 
 
@@ -119,12 +120,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
+					<executable>true</executable>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -1,24 +1,20 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/core
+  data.mongodb.uri: mongodb://localhost:27017/core
   kafka:
     consumer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: localhost:29092
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring:
+          deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
           json:
-            trusted:
-              packages: yeshenko.dto
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: {KEYKLOAK_HOST:http://localhost:8081}/auth/realms/yeshenko-personal
-mongock:
-  migration-scan-package: yeshenko.changelog
+            value.default.type: yeshenko.dto.DeviceDto
+            trusted.packages: yeshenko.dto
+  security.oauth2.resourceserver.jwt:
+    issuer-uri: ${KEYKLOAK_HOST:http://localhost:8081}/auth/realms/yeshenko-realm
+    jwk-set-uri: ${KEYKLOAK_HOST:http://localhost:8081}/auth/realms/yeshenko-realm/protocol/openid-connect/certs
+mongock.migration-scan-package: yeshenko.changelog
 minio:
   bucket:
     name: device-info
@@ -26,7 +22,3 @@ minio:
     key: minioadmin
     secret: minioadmin
   url: http://localhost:9000
-server:
-  port: 8081
-
-

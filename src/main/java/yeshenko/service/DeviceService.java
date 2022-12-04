@@ -22,7 +22,6 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final FileStorageService fileStorageService;
 
-
     public Device create(Device device) {
         log.debug("Execute Create method, device: {}", device);
 
